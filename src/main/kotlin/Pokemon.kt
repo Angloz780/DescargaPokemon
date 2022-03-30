@@ -22,7 +22,7 @@ data class Pokemon (
     fun decirNombreYTipo(): String{
         var result = "$name es de tipo "
         types.forEach{
-            result += "${it.type.name}"
+            result += "${it.type.name} "
         }
         result += "\n"
         return result
