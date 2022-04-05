@@ -20,7 +20,9 @@ data class Pokemon (
     val weight: Long
 ){
     fun decirNombreYTipo(): String{
+
         var result = "$name es de tipo "
+
         types.forEach{
             result += "${it.type.name} "
         }

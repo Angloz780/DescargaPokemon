@@ -1,52 +1,75 @@
 import com.google.gson.Gson
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlin.system.exitProcess
 
 var gson = Gson()
+
 fun main() {
 
-    //Crear cliente
-    var client = OkHttpClient()
+    val listaPokemon = ObtenerPokemonRequest.get()
 
-    //Hacer llamada a la url indicada
-    var request = Request.Builder().url("https://pokeapi.co/api/v2/pokemon/1").build()
+    listaPokemon.forEach {
+        println(it.decirNombreYTipo())
+    }
 
-    //Hacer la peticion de la llamada
-    val response = client.newCall(request).execute()
+    println("Escribe el nombre del Pokemon que quieres buscar")
 
-    //Mostrar la peticion si no da error
-    if(response.isSuccessful) {
-        //Transfroma a Gson
-        response.body?.string().let { responseBody ->
-            val pokemon = gson.fromJson(responseBody, Pokemon::class.java)
-            //println(pokemon.decirNombreYTipo())
-            print(main2())
+    val nombreBuscado = readLine()
+
+    nombreBuscado?.let {
+        //TODO Muestrame al Pokemon de ese nombre. Si no hay, dime que hay
+
+        var pokemonEncontrado : Pokemon? = null
+
+        listaPokemon.forEach {
+            if(nombreBuscado.contains(it.name))
+                pokemonEncontrado = it
         }
-    }else
-        println("Algo ha ido mal")
+        pokemonEncontrado?.let {
+            println(it.decirNombreYTipo())
+        }?: run{
+            println("Ese Pokemon no existe")
+        }
+    }
+
+    /* Forma 2
+    val listaFiltrada = listaPokemon.filter{
+        it.name == nombreBuscado
+        }
+
+    if(listaFiltrada.isEmpty()){
+        println("No se ha encontrado a ese Pokemon")
+    }else{
+        listaFiltrada.forEach{
+            println(it.decirNombreYTipo())
+        }
+    }
 }
+     */
 
-//Para sacar los 150 primeros Pokemon
-fun main2() {
+    println("Escribe el tipo que quieres buscar")
+    val tipoBuscado = readLine()
 
-    //Crear cliente
-    var client = OkHttpClient()
+    tipoBuscado?.let {
+        //TODO Muestrame todos los Pokemon de ese tipo. Si no hay, dime que hay
 
-    for(i in 1..150) {
-        //Hacer llamada a la url indicada
-        var request = Request.Builder().url("https://pokeapi.co/api/v2/pokemon/${i}").build()
+        val listaFiltrada = mutableListOf<Pokemon>()
 
-        //Hacer la peticion de la llamada
-        val response = client.newCall(request).execute()
+        listaPokemon.forEach { list ->
 
-        //Mostrar la peticion si no da error
-        if (response.isSuccessful) {
-            //Transfroma a Gson
-            response.body?.string().let { responseBody ->
-                val pokemon = gson.fromJson(responseBody, Pokemon::class.java)
-                println(pokemon.decirNombreYTipo())
+            list.types.forEach { tipo ->
+
+                if (tipoBuscado == tipo.type.name) {
+
+                    listaFiltrada.add(list)
+                }
             }
-        } else
-            println("Algo ha ido mal")
+        }
+        if (listaFiltrada.isEmpty()) {
+            println("El Pokemon no tiene este tipo")
+        } else {
+            listaFiltrada.forEach {
+                println(it.decirNombreYTipo())
+            }
+        }
     }
 }
